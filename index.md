@@ -113,6 +113,8 @@ var nanonautIsInTheAir = false;
 
 window.addEventListener('touchstart',onKeyDown);
 window.addEventListener('touchend',onKeyUp);
+window.addEventListener('keydown',onKeyDown);
+window.addEventListener('keyup',onKeyUp);
 window.addEventListener('load',start);
 
 var spaceKeyIsPressed = false;
