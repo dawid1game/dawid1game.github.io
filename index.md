@@ -1,8 +1,5 @@
-<!DOCTYPE html>
+Dawid's game
 <html>
-<head>
-<title>NINJA ACTION</title>
-</head>
 <body>
 <script>
 console.log('Welcome to your world.Your goal is to defeat the robots because they are enemies.')
