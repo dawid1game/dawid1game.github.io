@@ -1,4 +1,4 @@
-Dawid's game
+Dawid's game 23:53
 <html>
 <body>
 <script>
@@ -111,10 +111,10 @@ var nanonautY = GROUND_Y - NANONAUT_HEIGHT;
 var nanonautYSpeed = 0;
 var nanonautIsInTheAir = false;
 
-//window.addEventListener('touchstart',function () {console.out("AAA");});
-//window.addEventListener('touchend',function () {console.out("BBB");});
-//window.addEventListener('keydown',onKeyDown);
-//window.addEventListener('keyup',onKeyUp);
+window.addEventListener('touchstart',onKeyDown);
+window.addEventListener('touchend',onKeyUp);
+window.addEventListener('keydown',onKeyDown);
+window.addEventListener('keyup',onKeyUp);
 window.addEventListener('load',start);
 
 var spaceKeyIsPressed = false;
