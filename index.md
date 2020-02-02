@@ -111,8 +111,8 @@ var nanonautY = GROUND_Y - NANONAUT_HEIGHT;
 var nanonautYSpeed = 0;
 var nanonautIsInTheAir = false;
 
-window.addEventListener('keydown',onKeyDown);
-window.addEventListener('keyup',onKeyUp);
+window.addEventListener('touchstart',onKeyDown);
+window.addEventListener('touchend',onKeyUp);
 window.addEventListener('load',start);
 
 var spaceKeyIsPressed = false;
