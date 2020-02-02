@@ -111,8 +111,8 @@ var nanonautY = GROUND_Y - NANONAUT_HEIGHT;
 var nanonautYSpeed = 0;
 var nanonautIsInTheAir = false;
 
-//window.addEventListener('touchstart',onKeyDown);
-//window.addEventListener('touchend',onKeyUp);
+//window.addEventListener('touchstart',function () {console.out("AAA");});
+//window.addEventListener('touchend',function () {console.out("BBB");});
 //window.addEventListener('keydown',onKeyDown);
 //window.addEventListener('keyup',onKeyUp);
 window.addEventListener('load',start);
@@ -125,8 +125,8 @@ var bushData = generateBushes();
 
 function start() {
 window.requestAnimationFrame(mainLoop);
-document.body.addEventListener('touchstart', onKeyDown);
-document.body.addEventListener('touchend', onKeyUp);
+document.addEventListener('touchstart', onKeyDown);
+document.addEventListener('touchend', onKeyUp);
 }
 
 function generateBushes(){
