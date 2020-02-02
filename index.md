@@ -125,6 +125,8 @@ var bushData = generateBushes();
 
 function start() {
 window.requestAnimationFrame(mainLoop);
+document.body.addEventListener('touchstart', onKeyDown);
+document.body.addEventListener('touchend', onKeyUp);
 }
 
 function generateBushes(){
