@@ -1,3 +1,4 @@
+<html>
 <script>
  
 window.addEventListener('load', function(){
@@ -30,3 +31,4 @@ window.addEventListener('load', function(){
 }, false)
  
 </script>
+</html>
