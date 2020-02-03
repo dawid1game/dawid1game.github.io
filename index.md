@@ -1,4 +1,4 @@
-Dawid's game 23:53
+Dawid's game 23:59
 <html>
 <body>
 <script>
@@ -69,6 +69,8 @@ var canvas = document.createElement('canvas');
 var c = canvas.getContext('2d');
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
+canvas.addEventListener('touchstart',onKeyDown);
+canvas.addEventListener('touchend',onKeyUp);
 document.body.appendChild(canvas);
 
 var nanonautImage = new Image();
