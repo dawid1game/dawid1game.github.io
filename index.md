@@ -1,4 +1,4 @@
-Dawid's game 23:59
+Dawid's game
 <html>
 <body>
 <script>
