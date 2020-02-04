@@ -59,6 +59,7 @@ var ROBOT_X_SPEED = 4;
 var MIN_DISTANCE_BETWEEN_ROBOTS = 400;
 var MAX_DISTANCE_BETWEEN_ROBOTS = 1200;
 var MAX_ACTIVE_ROBOTS = 3;
+var SPEED_INCREMENT = 0.1;
 
 
 //SETUP
@@ -226,8 +227,6 @@ updateRobots();
 }
 
 function updateRobots() {
-// slowly speed up
-speedMult+=0.1;
 //move & animate robots
 for (var i = 0;i<robotData.length;i++) {
 robotData[i].x-=(ROBOT_X_SPEED*speedMult);
@@ -244,6 +243,8 @@ while(robotIndex<robotData.length) {
 if (robotData[robotIndex].x<cameraX-ROBOT_WIDTH){
 robotData.splice(robotIndex,1);
 console.log("i removed a ROBOT");
+// slowly speed up
+speedMult+=SPEED_INCREMENT;
 }else {
 robotIndex++;
 }
