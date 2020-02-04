@@ -63,6 +63,7 @@ var MAX_ACTIVE_ROBOTS = 3;
 
 //SETUP
 
+var speedMult=1;
 var cameraX = 0;
 var cameraY = 0;
 var canvas = document.createElement('canvas');
@@ -225,9 +226,11 @@ updateRobots();
 }
 
 function updateRobots() {
+// slowly speed up
+speedMult+=0.1;
 //move & animate robots
 for (var i = 0;i<robotData.length;i++) {
-robotData[i].x-=ROBOT_X_SPEED;
+robotData[i].x-=(ROBOT_X_SPEED*speedMult);
 if ((gameFrameCounter % ROBOT_ANIMATION_SPEED) === 0) {
 robotData[i].frameNr++;
 if (robotData[i].frameNr>= ROBOT_NR_ANIMATION_FRAMES) {
