@@ -244,7 +244,7 @@ if (robotData[robotIndex].x<cameraX-ROBOT_WIDTH){
 robotData.splice(robotIndex,1);
 console.log("i removed a ROBOT");
 // slowly speed up
-speedMult+=SPEED_INCREMENT;
+speedMult=ROBOT_X_SPEED+3*Math.random();
 }else {
 robotIndex++;
 }
