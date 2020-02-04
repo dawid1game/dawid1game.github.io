@@ -38,8 +38,8 @@ for (var i=0; i<10; i++){console.log(Math.random());
 
 //CONSTANTS
 
-var CANVAS_WIDTH = 800;
-var CANVAS_HEIGHT = 600;
+var CANVAS_WIDTH = 640;
+var CANVAS_HEIGHT = 480;
 var NANONAUT_WIDTH = 181;
 var NANONAUT_HEIGHT = 229;
 var GROUND_Y = 540;
