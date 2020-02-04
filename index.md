@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>JavaScript game controls</title>
+    <title>abc</title>
     <style>* { padding: 0; margin: 0; } canvas { background: #013333 url(img/background.png) no-repeat; display: block; margin: 0 auto; } #output { text-align: center; margin-top: 30px; } </style>
     <script src="js/leap-0.6.4.min.js"></script>
 </head>
@@ -124,8 +124,8 @@
     }
 
     // TOUCH
-    document.addEventListener("touchstart", touchHandler);
-    document.addEventListener("touchmove", touchHandler);
+    document.addEventListener('touchstart', touchHandler);
+    document.addEventListener('touchmove', touchHandler);
     function touchHandler(e) {
         if(e.touches) {
             playerX = e.touches[0].pageX - canvas.offsetLeft - playerWidth / 2;
