@@ -1,5 +1,8 @@
-Dawid's game
+<!DOCTYPE html>
 <html>
+<head>
+<title>NINJA ACTION</title>
+</head>
 <body>
 <script>
 console.log('Welcome to your world.Your goal is to defeat the robots because they are enemies.')
@@ -59,23 +62,22 @@ var ROBOT_X_SPEED = 4;
 var MIN_DISTANCE_BETWEEN_ROBOTS = 400;
 var MAX_DISTANCE_BETWEEN_ROBOTS = 1200;
 var MAX_ACTIVE_ROBOTS = 3;
-var SPEED_INCREMENT = 0.1;
+var SCREENSHAKE_RADIUS = 16;
+var NANONAUT_MAX_HEALTH = 100;
+var PLAY_GAME_MODE = 0;
+var GAME_OVER_GAME_MODE = 1;
 
 
 //SETUP
 
-var speedMult=1;
+var gameMode = PLAY_GAME_MODE;
+
 var cameraX = 0;
 var cameraY = 0;
 var canvas = document.createElement('canvas');
 var c = canvas.getContext('2d');
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
-canvas.style.left = "5px";
-canvas.style.top = "-50px";
-canvas.style.position = "absolute";
-canvas.addEventListener('touchstart',onKeyDown);
-canvas.addEventListener('touchend',onKeyUp);
 document.body.appendChild(canvas);
 
 var nanonautImage = new Image();
@@ -109,6 +111,17 @@ image: robotImage
 
 var robotData = [];
 
+var nanonautCollisionRectangle = {
+xOffset:60,
+yOffset:20,
+width:50,
+height:200};
+
+var robotCollisionRectangle = {
+xOffset:50,
+yOffset:20,
+width:50,
+height:100};
 
 
 
@@ -130,10 +143,11 @@ var nanonautFrameNr = 0;
 var gameFrameCounter = 0;
 var bushData = generateBushes();
 
+var screenshake = false;
+var nanonautHealth = NANONAUT_MAX_HEALTH;
+
 function start() {
 window.requestAnimationFrame(mainLoop);
-//document.addEventListener('touchstart', onKeyDown);
-//document.addEventListener('touchend', onKeyUp);
 }
 
 function generateBushes(){
@@ -190,6 +204,7 @@ spaceKeyIsPressed = false;
 //UPDATING
 
 function update(){
+if (gameMode != PLAY_GAME_MODE) return;
 gameFrameCounter = gameFrameCounter + 1;
 //update nanonaut
 nanonautX = nanonautX + NANONAUT_X_SPEED;
@@ -223,13 +238,34 @@ if ((bushData[i].x - cameraX)< - CANVAS_WIDTH){
 bushData[i].x +=(2*CANVAS_WIDTH)+150;}}
 
 //UPDATE ROBOTS
-updateRobots();
+screenshake = false;
+var nanonautTouchedARobot = updateRobots();
+if (nanonautTouchedARobot) {
+screenshake = true;
+if (nanonautHealth > 0) nanonautHealth--;
+}
+if (nanonautHealth<=0) {
+gameMode = GAME_OVER_GAME_MODE;
+screenshake = false;
+}
 }
 
 function updateRobots() {
 //move & animate robots
+var nanonautTouchedARobot = false;
 for (var i = 0;i<robotData.length;i++) {
-robotData[i].x-=(ROBOT_X_SPEED*speedMult);
+if (doesNanonautOverlapRobot(nanonautX+nanonautCollisionRectangle.xOffset,
+nanonautY+nanonautCollisionRectangle.yOffset,
+nanonautCollisionRectangle.width,
+nanonautCollisionRectangle.height,
+robotData[i].x+robotCollisionRectangle.xOffset,
+robotData[i].y+robotCollisionRectangle.yOffset,
+robotCollisionRectangle.width,
+robotCollisionRectangle.height)) {
+nanonautTouchedARobot = true;
+console.log('OUCH!');
+}
+robotData[i].x-=ROBOT_X_SPEED;
 if ((gameFrameCounter % ROBOT_ANIMATION_SPEED) === 0) {
 robotData[i].frameNr++;
 if (robotData[i].frameNr>= ROBOT_NR_ANIMATION_FRAMES) {
@@ -243,8 +279,6 @@ while(robotIndex<robotData.length) {
 if (robotData[robotIndex].x<cameraX-ROBOT_WIDTH){
 robotData.splice(robotIndex,1);
 console.log("i removed a ROBOT");
-// slowly speed up
-speedMult=1+1.5*Math.random();
 }else {
 robotIndex++;
 }
@@ -261,13 +295,38 @@ y:GROUND_Y-ROBOT_HEIGHT,
 frameNr:0
 });
 }
+return nanonautTouchedARobot;
+
+}
+
+function doesNanonautOverlapRobotAlongOneAxis(nanonautNearX,nanonautFarX,robotNearX,robotFarX) {
+var nanonautOverlapsNearRobotEdge = (nanonautFarX >= robotNearX) && (nanonautFarX<=robotFarX);
+var nanonautOverlapsFarRobotEdge = (nanonautNearX >= robotNearX) && (nanonautNearX<=robotFarX);
+var nanonautOverlapsEntireRobot = (nanonautNearX<=robotNearX) && (nanonautFarX >=robotFarX);
+return nanonautOverlapsNearRobotEdge || nanonautOverlapsFarRobotEdge || nanonautOverlapsEntireRobot;
+}
+
+function doesNanonautOverlapRobot(nanonautX,nanonautY,nanonautWidth,nanonautHeight,robotX,robotY,robotWidth,robotHeight)
+{
+var nanonautOverlapsRobotOnXAxis = doesNanonautOverlapRobotAlongOneAxis(nanonautX,nanonautX+nanonautWidth,robotX,robotX+robotWidth);
+var nanonautOverlapsRobotOnYAxis = doesNanonautOverlapRobotAlongOneAxis(nanonautY,nanonautY+nanonautHeight,robotY,robotY+robotHeight);
+return nanonautOverlapsRobotOnXAxis && nanonautOverlapsRobotOnYAxis;
 }
 
 
 //DRAWING
 
 function draw(){
-//c.clearRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
+//shake the screen if nes.
+
+var shakenCameraX = cameraX;
+var shakenCameraY = cameraY;
+
+if (screenshake) {
+shakenCameraX+=(Math.random()-0.5)*SCREENSHAKE_RADIUS;
+shakenCameraY+=(Math.random()-0.5)*SCREENSHAKE_RADIUS;
+}
+
 
 //Draw the sky.
 c.fillStyle = 'lightskyblue';
@@ -283,7 +342,7 @@ c.fillRect(0,GROUND_Y - 40,CANVAS_WIDTH,CANVAS_HEIGHT - GROUND_Y + 40);
 
 //draw the bush
 for (var i = 0; i<bushData.length;i++){
-c.drawImage(bushData[i].image,bushData[i].x - cameraX,GROUND_Y - bushData[i].y - cameraY);
+c.drawImage(bushData[i].image,bushData[i].x - shakenCameraX,GROUND_Y - bushData[i].y - shakenCameraY);
 }
 //c.drawImage(bush1Image,750,GROUND_Y - 90);
 //draw the nanonaut
@@ -291,20 +350,32 @@ c.drawImage(bushData[i].image,bushData[i].x - cameraX,GROUND_Y - bushData[i].y -
 
 //draw the robots
 for (var i = 0; i<robotData.length; i++) {
-drawAnimatedSprite(robotData[i].x-cameraX,
-robotData[i].y-cameraY,robotData[i].frameNr,robotSpriteSheet);
+drawAnimatedSprite(robotData[i].x-shakenCameraX,
+robotData[i].y-shakenCameraY,robotData[i].frameNr,robotSpriteSheet);
 }
 
 //Draw the Nanonaut.
-drawAnimatedSprite(nanonautX-cameraX,nanonautY-cameraY,
+drawAnimatedSprite(nanonautX-shakenCameraX,nanonautY-shakenCameraY,
 nanonautFrameNr,nanonautSpriteSheet);
 
-//Draw the Nanonaut.
-//var nanonautSpriteSheetRow = Math.floor(nanonautFrameNr/NANONAUT_NR_FRAMES_PER_ROW);
-//var nanonautSpriteSheetColumn = nanonautFrameNr% NANONAUT_NR_FRAMES_PER_ROW;
-//var nanonautSpriteSheetSheetX = nanonautSpriteSheetColumn * NANONAUT_WIDTH;
-//var nanonautSpriteSheetSheetY = nanonautSpriteSheetRow * NANONAUT_HEIGHT;
-//c.drawImage(nanonautImage,nanonautSpriteSheetSheetX,nanonautSpriteSheetSheetY,NANONAUT_WIDTH,NANONAUT_HEIGHT,nanonautX - cameraX,nanonautY - //cameraY,NANONAUT_WIDTH,NANONAUT_HEIGHT);
+//draw distance
+var nanonautDistance = nanonautX/100;
+c.fillStyle = 'black';
+c.font = '48px sans-serif';
+c.fillText(nanonautDistance.toFixed(0)+'m',20,40);
+
+//draw Health bar
+c.fillStyle = 'red';
+c.fillRect(400,10,nanonautHealth / NANONAUT_MAX_HEALTH*380,20);
+c.strokeStyle = 'red';
+c.strokeRect(400,10,380,20);
+
+// draw game over
+if (gameMode == GAME_OVER_GAME_MODE) {
+c.fillStyle = 'black';
+c.font = '96px sans-serif';
+c.fillText('GAME OVER',120,300);
+}
 }
 
 //draw animated sprite
