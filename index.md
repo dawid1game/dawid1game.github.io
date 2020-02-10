@@ -2,7 +2,7 @@
 <html>
 <head>
 <title>NINJA ACTION</title>
-</head>
+
 <body>
 <script>
 console.log('Welcome to your world.Your goal is to defeat the robots because they are enemies.')
@@ -66,11 +66,12 @@ var SCREENSHAKE_RADIUS = 16;
 var NANONAUT_MAX_HEALTH = 100;
 var PLAY_GAME_MODE = 0;
 var GAME_OVER_GAME_MODE = 1;
+var SPLASH_SCREEN = 2;
 
 
 //SETUP
 
-var gameMode = PLAY_GAME_MODE;
+var gameMode = SPLASH_SCREEN;
 
 var cameraX = 0;
 var cameraY = 0;
@@ -183,11 +184,17 @@ function onKeyDown(event) {
 //console.log(event.keyCode);
 if (event.keyCode === SPACE_KEYCODE) {
 spaceKeyIsPressed = true;
+if (gameMode === SPLASH_SCREEN) {
+gameMode = PLAY_GAME_MODE;
+}
 }
 }
 
 function onTouchDown(event) {
 spaceKeyIsPressed = true;
+if (gameMode === SPLASH_SCREEN) {
+gameMode = PLAY_GAME_MODE;
+}
 }
 
 function onKeyUp(event) {
@@ -340,6 +347,20 @@ c.drawImage(backgroundImage,backgroundX + BACKGROUND_WIDTH,-210);
 c.fillStyle =  'rgb(56,255,43)';
 c.fillRect(0,GROUND_Y - 40,CANVAS_WIDTH,CANVAS_HEIGHT - GROUND_Y + 40);
 
+// draw splash screen
+if (gameMode == SPLASH_SCREEN) {
+c.fillStyle = 'yellow';
+c.fillRect(100, 200, 580, 350);
+c.fillStyle = 'black';
+c.font = '50px sans-serif';
+c.fillText('        Dawid\'s game', 120, 260);
+c.fillText('        in support of', 120, 320);
+c.fillText('   Mary\'s Meals charity',120,390);
+c.font = '25px sans-serif';
+c.fillText('Press space bar or tap screen to start and jump', 120, 510);
+return;
+}
+
 //draw the bush
 for (var i = 0; i<bushData.length;i++){
 c.drawImage(bushData[i].image,bushData[i].x - shakenCameraX,GROUND_Y - bushData[i].y - shakenCameraY);
@@ -394,5 +415,17 @@ spriteSheet.spriteWidth, spriteSheet.spriteHeight
 
 
 </script>
+
+<font face="arial" color="black" size="4">
+<p> This game was coded by Dawid, in support of <a target="_blank" href="https://marysmeals.org.uk"> Mary's Meals</a> charity.
+It is based on a book "Create with code" by CoderDojo Foundation.
+Please consider clicking on the ad below - all proceeding will be donated to Mary's Meals.
+</p>
+</font>
+
+
+<script data-ad-client="ca-pub-5113161158199844" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
 </body>
+</head>
 </html>
