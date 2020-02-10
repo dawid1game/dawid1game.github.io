@@ -419,7 +419,7 @@ spriteSheet.spriteWidth, spriteSheet.spriteHeight
 <font face="arial" color="black" size="4">
 <p> This game was coded by Dawid, in support of <a target="_blank" href="https://marysmeals.org.uk"> Mary's Meals</a> charity.
 It is based on a book "Create with code" by CoderDojo Foundation.
-Please consider clicking on the ad below - all proceeding will be donated to Mary's Meals.
+Please consider clicking on the ad below - all proceeds will be donated to Mary's Meals.
 </p>
 </font>
 
