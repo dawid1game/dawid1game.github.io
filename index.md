@@ -45,6 +45,9 @@ var canvas = document.createElement('canvas');
 var c = canvas.getContext('2d');
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
+canvas.style.left = 5;
+canvas.style.top = -30;
+canvas.style.position = "absolute";
 document.body.appendChild(canvas);
 
 var nanonautImage = new Image();
@@ -316,14 +319,17 @@ c.fillRect(0,GROUND_Y - 40,CANVAS_WIDTH,CANVAS_HEIGHT - GROUND_Y + 40);
 // draw splash screen
 if (gameMode == SPLASH_SCREEN) {
 c.fillStyle = 'yellow';
-c.fillRect(100, 200, 580, 350);
+c.fillRect(100, 100, 580, 450);
 c.fillStyle = 'black';
 c.font = '50px sans-serif';
-c.fillText('        Dawid\'s game', 120, 260);
-c.fillText('        in support of', 120, 320);
-c.fillText('   Mary\'s Meals charity',120,390);
+c.fillText('        Dawid\'s game', 120, 160);
+c.fillText('        in support of', 120, 220);
+c.fillText('   Mary\'s Meals charity',120,290);
 c.font = '25px sans-serif';
-c.fillText('Press space bar or tap screen to start and jump', 120, 510);
+c.fillText('Press space bar or tap screen to start and jump', 120, 370);
+c.font = '14px sans-serif';
+c.fillText('         Game is based on a book "Create with code" by CoderDojo Foundation.', 120, 480);
+c.fillText('Please consider clicking on the ad below - all proceeds will be donated to Mary\'s Meals.',120, 510);
 return;
 }
 
