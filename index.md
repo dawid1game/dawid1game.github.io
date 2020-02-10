@@ -1,43 +1,9 @@
-<!DOCTYPE html>
 <html>
 <head>
 <title>NINJA ACTION</title>
 
 <body>
 <script>
-console.log('Welcome to your world.Your goal is to defeat the robots because they are enemies.')
-
-//TESTY
-
-var komoda = [12,93,72,128,199,88,77];
-
-for (var szuflada = 1; szuflada<komoda.length; szuflada++) {
-console.log(komoda[szuflada]);
-}
-
-var szkola = {
-klasy:8,
-nauczyciele:16,
-dzieci:132};
-
-console.log(szkola);
-
-szkola.klasy++;
-
-console.log(szkola);
-
-szkola.nauczyciele--;
-
-console.log(szkola);
-
-console.log(szkola);
-
-console.log (szkola.nauczyciele + szkola.dzieci);
-
-for (var i=0; i<10; i++){console.log(Math.random());
-}
-//*************************************\\
-
 
 //CONSTANTS
 
