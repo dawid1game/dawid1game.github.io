@@ -46,7 +46,7 @@ var c = canvas.getContext('2d');
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
 canvas.style.left = 5;
-canvas.style.top = -30;
+canvas.style.top = -70;
 canvas.style.position = "absolute";
 document.body.appendChild(canvas);
 
@@ -329,7 +329,8 @@ c.font = '25px sans-serif';
 c.fillText('Press space bar or tap screen to start and jump', 120, 370);
 c.font = '14px sans-serif';
 c.fillText('         Game is based on a book "Create with code" by CoderDojo Foundation.', 120, 480);
-c.fillText('Please consider clicking on the ad below - all proceeds will be donated to Mary\'s Meals.',120, 510);
+//enable below when ads work
+//c.fillText('Please consider clicking on the ad below - all proceeds will be donated to Mary\'s Meals.',120, 510);
 return;
 }
 
