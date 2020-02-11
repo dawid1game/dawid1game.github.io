@@ -33,6 +33,7 @@ var NANONAUT_MAX_HEALTH = 100;
 var PLAY_GAME_MODE = 0;
 var GAME_OVER_GAME_MODE = 1;
 var SPLASH_SCREEN = 2;
+var SPEED_INCREASE = 0.0003;
 
 
 //SETUP
@@ -46,7 +47,7 @@ var c = canvas.getContext('2d');
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
 canvas.style.left = "5px";
-canvas.style.top = "-10px";
+canvas.style.top = "-1px";
 canvas.style.position = "absolute";
 document.body.appendChild(canvas);
 
@@ -115,6 +116,8 @@ var bushData = generateBushes();
 
 var screenshake = false;
 var nanonautHealth = NANONAUT_MAX_HEALTH;
+
+var actualSpeed = ROBOT_X_SPEED;
 
 function start() {
 window.requestAnimationFrame(mainLoop);
@@ -239,9 +242,10 @@ robotData[i].y+robotCollisionRectangle.yOffset,
 robotCollisionRectangle.width,
 robotCollisionRectangle.height)) {
 nanonautTouchedARobot = true;
-console.log('OUCH!');
+//console.log('OUCH!');
 }
-robotData[i].x-=ROBOT_X_SPEED;
+robotData[i].x-=actualSpeed;
+actualSpeed += SPEED_INCREASE;
 if ((gameFrameCounter % ROBOT_ANIMATION_SPEED) === 0) {
 robotData[i].frameNr++;
 if (robotData[i].frameNr>= ROBOT_NR_ANIMATION_FRAMES) {
@@ -254,7 +258,7 @@ var robotIndex = 0;
 while(robotIndex<robotData.length) {
 if (robotData[robotIndex].x<cameraX-ROBOT_WIDTH){
 robotData.splice(robotIndex,1);
-console.log("i removed a ROBOT");
+//console.log("i removed a ROBOT");
 }else {
 robotIndex++;
 }
