@@ -45,8 +45,8 @@ var canvas = document.createElement('canvas');
 var c = canvas.getContext('2d');
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
-canvas.style.left = 5;
-canvas.style.top = -70;
+canvas.style.left = "5px";
+canvas.style.top = "-40px";
 canvas.style.position = "absolute";
 document.body.appendChild(canvas);
 
