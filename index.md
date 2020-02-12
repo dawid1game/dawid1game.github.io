@@ -226,6 +226,37 @@ if (nanonautHealth > 0) nanonautHealth--;
 if (nanonautHealth<=0) {
 gameMode = GAME_OVER_GAME_MODE;
 screenshake = false;
+// Save high score in local storage
+<!-- var usrName = prompt("State your name for the list of high scores"); -->
+
+<!-- var highScoreJASON = localStorage.getItem('highScore'); -->
+<!-- const parsedData = JSON.parse(highScoreJASON); -->
+<!-- console.log(data); -->
+
+<!-- var distance = nanonautX/100; -->
+<!-- var obj = { name: usrName, distance: distance}; -->
+
+<!-- if (data) { -->
+<!-- var newData = []; -->
+<!-- if (data.length<2) { -->
+<!-- newData = [data obj];} -->
+<!-- else { -->
+<!-- newData.push(obj); -->
+<!-- } -->
+<!-- var myJSON = JSON.stringify(newData); -->
+<!-- localStorage.setItem('highScore',myJSON); -->
+<!-- console.log("State1"); -->
+<!-- } -->
+<!-- else { -->
+<!-- // No JSON field found, just add it -->
+<!-- var myJSON = JSON.stringify(obj); -->
+<!-- localStorage.setItem('highScore',myJSON); -->
+<!-- console.log("State2"); -->
+<!-- } -->
+
+//localStorage.setItem('highScore',myJSON);
+
+
 }
 }
 
@@ -393,7 +424,7 @@ spriteSheet.spriteWidth, spriteSheet.spriteHeight
 
 </script>
 
-<script data-ad-client="ca-pub-5113161158199844" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+//<script data-ad-client="ca-pub-5113161158199844" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 
 </body>
 </head>
