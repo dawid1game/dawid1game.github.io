@@ -1,9 +1,43 @@
+			   
 <html>
 <head>
 <title>NINJA ACTION</title>
 
 <body>
 <script>
+																								
+
+	   
+
+									  
+
+																						  
+							  
+ 
+
+			  
+		
+			   
+			
+
+					
+
+			   
+
+					
+
+					 
+
+					
+
+					
+
+												 
+
+													  
+   
+										 
+
 
 //CONSTANTS
 
@@ -33,7 +67,21 @@ var NANONAUT_MAX_HEALTH = 100;
 var PLAY_GAME_MODE = 0;
 var GAME_OVER_GAME_MODE = 1;
 var SPLASH_SCREEN = 2;
-var SPEED_INCREASE = 0.0007;
+var SPEED_INCREASE = 0; //0.0007;
+var MONEY_WIDTH = 70;
+var MONEY_HEIGHT = 70;
+var MONEY_NR_ANIMATION_FRAMES = 4;
+var MONEY_X_SPEED = 5;
+var MONEY_ANIMATION_SPEED = 20;
+var MIN_DISTANCE_BETWEEN_MONEY = 400;
+var MAX_DISTANCE_BETWEEN_MONEY = 1200;
+var MAX_ACTIVE_MONEY = 2;								  
+					  
+							   
+									 
+									  
+						 
+
 
 
 //SETUP
@@ -66,6 +114,10 @@ bush2Image.src = 'bush2.png';
 var robotImage = new Image();
 robotImage.src = 'animatedRobot.png';
 
+var moneyImage = new Image();
+moneyImage.src = 'coin4.png';							 
+							 
+
 var nanonautSpriteSheet = {
 nrFramesPerRow: 5,
 spriteWidth: NANONAUT_WIDTH,
@@ -80,7 +132,20 @@ spriteHeight: ROBOT_HEIGHT,
 image: robotImage
 };
 
+var moneySpriteSheet = {
+nrFramesPerRow: 4,
+spriteWidth:MONEY_WIDTH,
+spriteHeight: MONEY_HEIGHT,
+image: moneyImage
+};						
+				  
+						
+						   
+				 
+  
+
 var robotData = [];
+var moneyData = [];		   
 
 var nanonautCollisionRectangle = {
 xOffset:60,
@@ -94,6 +159,15 @@ yOffset:20,
 width:50,
 height:100};
 
+var moneyCollisionRectangle = {
+xOffset:50, //tbd
+yOffset:20, //tbd
+width:30,
+height:30};							   
+				 
+				 
+		 
+		   
 
 
 var nanonautX = CANVAS_WIDTH / 2;
@@ -116,6 +190,7 @@ var bushData = generateBushes();
 
 var screenshake = false;
 var nanonautHealth = NANONAUT_MAX_HEALTH;
+var nanonautMoney = 0;
 
 var actualSpeed = ROBOT_X_SPEED;
 
@@ -255,9 +330,118 @@ screenshake = false;
 <!-- } -->
 
 //localStorage.setItem('highScore',myJSON);
+			  
+ 
 
+					   
 
+					   
+								  
+										
+																																  
+											 
+								 
+								  
+											   
+											   
+							  
+								  
+							 
+							
+ 
+							  
+													   
+					   
+													   
+						 
+ 
+ 
+ 
+			  
+				   
+									
+												 
+							   
+								  
+  
+								 
+							   
+								 
+							
+ 
+	  
+			 
+ 
+ 
+										
+							  
+						 
+											  
+  
+																															
+				
+			
+						
+		 
+   
 }
+//UPDATE MONEY
+updateMoney();							 
+}
+
+function updateMoney(){
+
+//move & animate robots
+var nanonautTouchedAMoney = false;
+for (var i = 0;i<moneyData.length;i++) {
+if (doesNanonautOverlapRobot(nanonautX+nanonautCollisionRectangle.xOffset,
+nanonautY+nanonautCollisionRectangle.yOffset,
+nanonautCollisionRectangle.width,
+nanonautCollisionRectangle.height,
+moneyData[i].x+moneyCollisionRectangle.xOffset,
+moneyData[i].y+moneyCollisionRectangle.yOffset,
+moneyCollisionRectangle.width,
+moneyCollisionRectangle.height)) {
+nanonautTouchedAMoney = true;
+//console.log('I am rich!');
+}
+moneyData[i].x-=MONEY_X_SPEED;
+if ((gameFrameCounter % MONEY_ANIMATION_SPEED) === 0) {
+moneyData[i].frameNr++;
+if (moneyData[i].frameNr>= MONEY_NR_ANIMATION_FRAMES) {
+moneyData[i].frameNr = 0;
+}
+}
+}
+//REMOVE MONEY
+var moneyIndex = 0;
+while(moneyIndex<moneyData.length) {
+if (moneyData[moneyIndex].x<cameraX-MONEY_WIDTH){
+moneyData.splice(moneyIndex,1);
+//console.log("i removed a coin");
+} 
+else if (nanonautTouchedAMoney) {
+moneyData.splice(moneyIndex,1);
+nanonautMoney = nanonautMoney +1;
+nanonautTouchedAMoney=false;
+}
+else {
+moneyIndex++;
+}
+}
+if (moneyData.length<MAX_ACTIVE_MONEY) {
+var lastMoneyX = CANVAS_WIDTH;
+if (moneyData.length>0) {
+ lastMoneyX = moneyData[moneyData.length-1].x;
+ }
+var newMoneyX = lastMoneyX+MIN_DISTANCE_BETWEEN_MONEY+Math.random()*(MAX_DISTANCE_BETWEEN_MONEY-MIN_DISTANCE_BETWEEN_MONEY);
+moneyData.push({
+x:newMoneyX,
+y:GROUND_Y-MONEY_HEIGHT,
+frameNr:0
+});
+}
+return nanonautTouchedAMoney;
 }
 
 function updateRobots() {
@@ -387,6 +571,20 @@ robotData[i].y-shakenCameraY,robotData[i].frameNr,robotSpriteSheet);
 drawAnimatedSprite(nanonautX-shakenCameraX,nanonautY-shakenCameraY,
 nanonautFrameNr,nanonautSpriteSheet);
 
+//draw the gold
+for (var i = 0; i<moneyData.length; i++) {
+drawAnimatedSprite(moneyData[i].x-shakenCameraX,
+moneyData[i].y-shakenCameraY,moneyData[i].frameNr,moneySpriteSheet);
+
+}
+
+			   
+										  
+												
+																	
+
+ 
+
 //draw distance
 var nanonautDistance = nanonautX/100;
 c.fillStyle = 'black';
@@ -398,6 +596,16 @@ c.fillStyle = 'red';
 c.fillRect(400,10,nanonautHealth / NANONAUT_MAX_HEALTH*380,20);
 c.strokeStyle = 'red';
 c.strokeRect(400,10,380,20);
+
+//draw the money counter.
+c.fillStyle = 'black';
+c.font = '48px sans-serif';
+c.fillText(nanonautMoney.toFixed(0)+'gold',170,40);
+
+						 
+					  
+						   
+												   
 
 // draw game over
 if (gameMode == GAME_OVER_GAME_MODE) {
