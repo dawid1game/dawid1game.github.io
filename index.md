@@ -7,7 +7,7 @@
 
 <body>
 
-<script type="text/javascript" src="myGame.js"></script>
+<script type="text/javascript" src="game.js"></script>
 
 </body>
 </head>
