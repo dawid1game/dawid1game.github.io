@@ -3,42 +3,13 @@
 <head>
 <title>NINJA ACTION</title>
 
+<script type="text/javascript" src="jquery-1.4.4.min.js"></script>
+<script type="text/javascript" src="google-spreadsheet.js"></script>
+
 <body>
 <script>
-																								
 
-	   
-
-									  
-
-																						  
-							  
- 
-
-			  
-		
-			   
 			
-
-					
-
-			   
-
-					
-
-					 
-
-					
-
-					
-
-												 
-
-													  
-   
-										 
-
-
 //CONSTANTS
 
 var CANVAS_WIDTH = 800;
@@ -48,6 +19,11 @@ var NANONAUT_HEIGHT = 229;
 var GROUND_Y = 540;
 var NANONAUT_Y_ACCELERATION = 1;
 var SPACE_KEYCODE = 32;
+var ENTER_KEYCODE = 13;
+var ESC_KEYCODE = 27;
+var ARROW_DOWN = 40;
+var ARROW_UP = 38;
+
 var NANONAUT_JUMP_SPEED = 20;
 var NANONAUT_X_SPEED = 5;
 var BACKGROUND_WIDTH = 1000;
@@ -59,14 +35,42 @@ var ROBOT_HEIGHT = 139;
 var ROBOT_NR_ANIMATION_FRAMES = 9;
 var ROBOT_ANIMATION_SPEED = 5;
 var ROBOT_X_SPEED = 4;
+var ROBOT_SPEED = 5;
+var S_ROBOT_SPEED = 5;
+var H_ROBOT_SPEED = 4;
 var MIN_DISTANCE_BETWEEN_ROBOTS = 400;
 var MAX_DISTANCE_BETWEEN_ROBOTS = 1200;
+var ROBOT_S_ANIMATION_SPEED = 10;
+var ROBOT_S_X_SPEED = 5;
+var MIN_DISTANCE_BETWEEN_S_ROBOTS = 400;
+var MAX_DISTANCE_BETWEEN_S_ROBOTS = 1200
 var MAX_ACTIVE_ROBOTS = 3;
 var SCREENSHAKE_RADIUS = 16;
 var NANONAUT_MAX_HEALTH = 100;
+
+//Modes
 var PLAY_GAME_MODE = 0;
 var GAME_OVER_GAME_MODE = 1;
 var SPLASH_SCREEN = 2;
+var PAUSE_SCREEN = 3;
+var SHOP_SCREEN = 4;
+
+// Option modes
+START_OPTION = 1;
+NEW_USER_OPTION = 2;
+CHOOSE_USER_OPTION = 3;
+HALLOWEEN_WORLD = 4;
+NORMAL_WORLD = 5;
+MAX_OPTION = 4;
+MIN_OPTION = 1;
+
+// Shop option modes
+SHOP_STRIDERI_OPTION = 1;
+SHOP_STRIDERII_OPTION = 2;
+SHOP_STRIDERIII_OPTION = 3;
+MAXSHOP_OPTION = 3;
+MINSHOP_OPTION = 1;
+
 var SPEED_INCREASE = 0; //0.0007;
 var MONEY_WIDTH = 70;
 var MONEY_HEIGHT = 70;
@@ -75,18 +79,55 @@ var MONEY_X_SPEED = 5;
 var MONEY_ANIMATION_SPEED = 20;
 var MIN_DISTANCE_BETWEEN_MONEY = 400;
 var MAX_DISTANCE_BETWEEN_MONEY = 1200;
-var MAX_ACTIVE_MONEY = 2;								  
-					  
-							   
-									 
-									  
-						 
+var MAX_ACTIVE_MONEY = 2;	
 
+var START_AGAIN_XMIN = 12;
+var START_AGAIN_XMAX = 246;
+var START_AGAIN_YMIN = 447;
+var START_AGAIN_YMAX = 468;
+var EXIT_XMAX = 776;
+var EXIT_XMIN = 354;
+var EXIT_YMAX = 475;
+var	EXIT_YMIN = 444;
+var SHOP_XMAX = 107;
+var SHOP_XMIN = 10;
+var SHOP_YMAX = 571;
+var SHOP_YMIN = 547;
 
+//effects
+var STRIDER_I_TIMER = 1200;
+var STRIDER_II_TIMER = 2400;
+var STRIDER_III_TIMER = 9000;
+
+var STRIDER_I_COST = 20;
+var STRIDER_II_COST = 40;
+var STRIDER_III_COST = 60;
+
+var NUMBER_DB_COLUMNS = 3;	  
+
+var DB_LINK = "https://docs.google.com/spreadsheets/d/1bS93fQWAnZvskfQUhFKf-esWUYulVu9rezZbzU7iq0g/edit?usp=sharing";
+
+//Robot Types
+var ROBOT_TYPE = 1;
+var SROBOT_TYPE = 2;
+var HROBOT_TYPE = 3;
 
 //SETUP
 
+//EFFECTS
+
+var striderTimer = 0;
+
+var selectedOption = START_OPTION;
+
+var selectedShopOption = SHOP_STRIDERI_OPTION;
+
 var gameMode = SPLASH_SCREEN;
+
+var currentUser = '';
+var loadedDistance = 0;
+
+var gameLevel = 1;
 
 var cameraX = 0;
 var cameraY = 0;
@@ -99,11 +140,21 @@ canvas.style.top = "-1px";
 canvas.style.position = "absolute";
 document.body.appendChild(canvas);
 
+var grassColour = 'rgb(56,255,43)';
+
 var nanonautImage = new Image();
 nanonautImage.src = 'animatedNanonaut.png';
 
-var backgroundImage = new Image();
-backgroundImage.src = 'background.png';
+var nanonautStriderImage = new Image();
+nanonautStriderImage.src = 'animatedNanonaut_strider.png'
+
+var backgroundLightImage = new Image();
+backgroundLightImage.src = 'background.png';
+
+var backgroundDarkImage = new Image();
+backgroundDarkImage.src = 'background_dark.png';
+
+var backgroundImage = backgroundLightImage;
 
 var bush1Image = new Image();
 bush1Image.src = 'bush1.png';
@@ -113,6 +164,12 @@ bush2Image.src = 'bush2.png';
 
 var robotImage = new Image();
 robotImage.src = 'animatedRobot.png';
+
+var sRobotImage = new Image();
+sRobotImage.src = 'animatedSuperRobot.png';
+
+var hRobotImage = new Image();
+hRobotImage.src = 'animatedHalloweenRobot.png';
 
 var moneyImage = new Image();
 moneyImage.src = 'coin4.png';							 
@@ -125,11 +182,32 @@ spriteHeight: NANONAUT_HEIGHT,
 image: nanonautImage
 };
 
+var nanonautStriderSpriteSheet = {
+nrFramesPerRow: 5,
+spriteWidth: NANONAUT_WIDTH,
+spriteHeight: NANONAUT_HEIGHT,
+image: nanonautStriderImage
+};
+
 var robotSpriteSheet = {
 nrFramesPerRow: 3,
 spriteWidth:ROBOT_WIDTH,
 spriteHeight: ROBOT_HEIGHT,
 image: robotImage
+};
+
+var sRobotSpriteSheet = {
+nrFramesPerRow: 3,
+spriteWidth:ROBOT_WIDTH,
+spriteHeight: ROBOT_HEIGHT,
+image: sRobotImage
+};
+
+var hRobotSpriteSheet = {
+nrFramesPerRow: 3,
+spriteWidth:ROBOT_WIDTH,
+spriteHeight: ROBOT_HEIGHT,
+image: hRobotImage
 };
 
 var moneySpriteSheet = {
@@ -138,11 +216,6 @@ spriteWidth:MONEY_WIDTH,
 spriteHeight: MONEY_HEIGHT,
 image: moneyImage
 };						
-				  
-						
-						   
-				 
-  
 
 var robotData = [];
 var moneyData = [];		   
@@ -181,6 +254,7 @@ window.addEventListener('touchend',onTouchUp);
 window.addEventListener('keydown',onKeyDown);
 window.addEventListener('keyup',onKeyUp);
 window.addEventListener('load',start);
+window.addEventListener('click',onMouseClick);
 
 var spaceKeyIsPressed = false;
 var nanonautFrameNr = 0;
@@ -193,6 +267,9 @@ var nanonautHealth = NANONAUT_MAX_HEALTH;
 var nanonautMoney = 0;
 
 var actualSpeed = ROBOT_X_SPEED;
+
+var mousePosX=0;
+var mousePosY=0;
 
 function start() {
 window.requestAnimationFrame(mainLoop);
@@ -228,12 +305,118 @@ window.requestAnimationFrame(mainLoop);
 //PLAYER INPUT
 
 function onKeyDown(event) {
-//console.log(event.keyCode);
+console.log(event.keyCode);
 if (event.keyCode === SPACE_KEYCODE) {
 spaceKeyIsPressed = true;
-if (gameMode === SPLASH_SCREEN) {
+}
+else if (event.keyCode === ENTER_KEYCODE && gameMode === PLAY_GAME_MODE) {
+gameMode = PAUSE_SCREEN;
+}
+else if (event.keyCode === ESC_KEYCODE && gameMode === PAUSE_SCREEN) {
 gameMode = PLAY_GAME_MODE;
 }
+else if (event.keyCode === ENTER_KEYCODE && gameMode === SPLASH_SCREEN && selectedOption === START_OPTION) {
+gameMode = PLAY_GAME_MODE;
+gameWorld = NORMAL_WORLD;
+}
+else if (event.keyCode === ARROW_DOWN && gameMode === SPLASH_SCREEN) {
+selectedOption = selectedOption +1;
+if (selectedOption > MAX_OPTION) {
+selectedOption = MIN_OPTION;
+}
+}
+else if (event.keyCode === ARROW_UP && gameMode === SPLASH_SCREEN) {
+selectedOption = selectedOption - 1;
+if (selectedOption < MIN_OPTION) {
+selectedOption = MAX_OPTION;
+}
+}
+else if (event.keyCode === ARROW_DOWN && gameMode === SHOP_SCREEN) {
+selectedShopOption = selectedShopOption +1;
+if (selectedShopOption > MAXSHOP_OPTION) {
+selectedShopOption = MINSHOP_OPTION;
+}
+}
+else if (event.keyCode === ARROW_UP && gameMode === SHOP_SCREEN) {
+selectedShopOption = selectedShopOption - 1;
+if (selectedShopOption < MINSHOP_OPTION) {
+selectedShopOption = MAXSHOP_OPTION;
+}
+}
+// Get user name
+else if (event.keyCode === ENTER_KEYCODE && gameMode === SPLASH_SCREEN && selectedOption === NEW_USER_OPTION) {
+// =  DB_LINK;
+
+localStorage.clear();
+      var sample_url = DB_LINK;
+      var url_parameter = document.location.search.split(/\?url=/)[1]
+      var url = url_parameter || sample_url;
+      var googleSpreadsheet = new GoogleSpreadsheet();
+	  
+      googleSpreadsheet.url(url);
+      googleSpreadsheet.load(function(result) {
+	  myData = JSON.stringify(result.data);
+	  console.log(result.data[1]);
+        $('#results').html(JSON.stringify(result));
+      });
+	  
+
+var usrName = prompt("Write your username in so you can play the game.");
+}
+else if (event.keyCode === ENTER_KEYCODE && gameMode === SPLASH_SCREEN && selectedOption === CHOOSE_USER_OPTION) {
+// Get user name
+var usrName = prompt("Write your username in to continue from your level.");
+
+var sample_url = DB_LINK;
+      var url_parameter = document.location.search.split(/\?url=/)[1]
+      var url = url_parameter || sample_url;
+      var googleSpreadsheet = new GoogleSpreadsheet();
+	  
+      googleSpreadsheet.url(url);
+      googleSpreadsheet.load(function(result) {
+	  <!-- myData = JSON.stringify(result.data); -->
+	  <!-- console.log(result.data.length); -->
+var numberOfUsers = result.data.length/NUMBER_DB_COLUMNS -1;
+loadedDistance = 0; //Reset
+for (var i = 1; i<(numberOfUsers + 1); i++) {
+if (result.data[i*NUMBER_DB_COLUMNS]===usrName)
+{
+currentUser = usrName;
+console.log('hit!');
+var gold = result.data[i*NUMBER_DB_COLUMNS+1];
+var dist = result.data[i*NUMBER_DB_COLUMNS+2];
+nanonautMoney = parseFloat(gold);
+loadedDistance = parseFloat(dist);
+console.log(gold);
+console.log(dist);
+break;
+}
+}
+})
+}
+else if (event.keyCode === ENTER_KEYCODE && gameMode === SPLASH_SCREEN && selectedOption === HALLOWEEN_WORLD) {
+backgroundImage = backgroundDarkImage;
+grassColour = 'rgb(74,36,0)';
+gameMode = PLAY_GAME_MODE;
+gameWorld = HALLOWEEN_WORLD;
+}
+else if (event.keyCode === ESC_KEYCODE && gameMode === SHOP_SCREEN) {
+gameMode = PAUSE_SCREEN;
+}
+else if (gameMode === SHOP_SCREEN && event.keyCode === ENTER_KEYCODE) {
+	if (selectedShopOption === SHOP_STRIDERI_OPTION) { 
+	nanonautMoney = nanonautMoney - STRIDER_I_COST;
+	striderTimer = STRIDER_I_TIMER;
+	}
+	else if (selectedShopOption === SHOP_STRIDERII_OPTION) { 
+	nanonautMoney = nanonautMoney - STRIDER_II_COST;
+	striderTimer = STRIDER_II_TIMER;
+	}
+	else if (selectedShopOption === SHOP_STRIDERIII_OPTION) { 
+	nanonautMoney = nanonautMoney - STRIDER_III_COST;
+	striderTimer = STRIDER_III_TIMER;
+	}
+gameMode = PAUSE_SCREEN;
 }
 }
 
@@ -241,6 +424,7 @@ function onTouchDown(event) {
 spaceKeyIsPressed = true;
 if (gameMode === SPLASH_SCREEN) {
 gameMode = PLAY_GAME_MODE;
+gameWorld = NORMAL_WORLD;
 }
 }
 
@@ -254,6 +438,11 @@ function onTouchUp(event) {
 spaceKeyIsPressed = false;
 }
 
+function onMouseClick(event) {
+mousePosX=event.clientX;
+mousePosY=event.clientY;
+}
+
 
 //UPDATING
 
@@ -262,6 +451,11 @@ if (gameMode != PLAY_GAME_MODE) return;
 gameFrameCounter = gameFrameCounter + 1;
 //update nanonaut
 nanonautX = nanonautX + NANONAUT_X_SPEED;
+striderTimer--;
+
+if (striderTimer <0) {
+striderTimer = 0;
+}
 
 if (spaceKeyIsPressed && !nanonautIsInTheAir) {
 nanonautYSpeed = -NANONAUT_JUMP_SPEED;
@@ -293,16 +487,24 @@ bushData[i].x +=(2*CANVAS_WIDTH)+150;}}
 
 //UPDATE ROBOTS
 screenshake = false;
-var nanonautTouchedARobot = updateRobots();
+let outData = updateRobots();
+let robotTypeTouched = outData.robotTypeTouched,
+	nanonautTouchedARobot = outData.nanonautTouchedARobot;
+
 if (nanonautTouchedARobot) {
 screenshake = true;
-if (nanonautHealth > 0) nanonautHealth--;
+if (nanonautHealth > 0 && striderTimer===0) 
+{ if ((robotTypeTouched === SROBOT_TYPE) || (robotTypeTouched === HROBOT_TYPE))
+{nanonautHealth = nanonautHealth - 5;}
+else 
+{nanonautHealth--;}
+}
 }
 if (nanonautHealth<=0) {
 gameMode = GAME_OVER_GAME_MODE;
 screenshake = false;
-// Save high score in local storage
-<!-- var usrName = prompt("State your name for the list of high scores"); -->
+
+ 
 
 <!-- var highScoreJASON = localStorage.getItem('highScore'); -->
 <!-- const parsedData = JSON.parse(highScoreJASON); -->
@@ -330,60 +532,7 @@ screenshake = false;
 <!-- } -->
 
 //localStorage.setItem('highScore',myJSON);
-			  
- 
 
-					   
-
-					   
-								  
-										
-																																  
-											 
-								 
-								  
-											   
-											   
-							  
-								  
-							 
-							
- 
-							  
-													   
-					   
-													   
-						 
- 
- 
- 
-			  
-				   
-									
-												 
-							   
-								  
-  
-								 
-							   
-								 
-							
- 
-	  
-			 
- 
- 
-										
-							  
-						 
-											  
-  
-																															
-				
-			
-						
-		 
-   
 }
 //UPDATE MONEY
 updateMoney();							 
@@ -447,6 +596,7 @@ return nanonautTouchedAMoney;
 function updateRobots() {
 //move & animate robots
 var nanonautTouchedARobot = false;
+var robotTypeTouched = 0;
 for (var i = 0;i<robotData.length;i++) {
 if (doesNanonautOverlapRobot(nanonautX+nanonautCollisionRectangle.xOffset,
 nanonautY+nanonautCollisionRectangle.yOffset,
@@ -457,10 +607,11 @@ robotData[i].y+robotCollisionRectangle.yOffset,
 robotCollisionRectangle.width,
 robotCollisionRectangle.height)) {
 nanonautTouchedARobot = true;
-//console.log('OUCH!');
+robotTypeTouched = robotData[i].robotType;  //Different robots do different damage
+//console.log(robotTypeTouched);
 }
-robotData[i].x-=actualSpeed;
-actualSpeed += SPEED_INCREASE;
+robotData[i].x-=robotData[i].robotSpeed;
+//actualSpeed += SPEED_INCREASE; //TODO: increase speed
 if ((gameFrameCounter % ROBOT_ANIMATION_SPEED) === 0) {
 robotData[i].frameNr++;
 if (robotData[i].frameNr>= ROBOT_NR_ANIMATION_FRAMES) {
@@ -484,13 +635,42 @@ if (robotData.length>0) {
  lastRobotX = robotData[robotData.length-1].x;
  }
 var newRobotX = lastRobotX+MIN_DISTANCE_BETWEEN_ROBOTS+Math.random()*(MAX_DISTANCE_BETWEEN_ROBOTS-MIN_DISTANCE_BETWEEN_ROBOTS);
-robotData.push({
-x:newRobotX,
-y:GROUND_Y-ROBOT_HEIGHT,
-frameNr:0
-});
+if (Math.random()>0.75) {
+	robotData.push({
+	x:newRobotX,
+	y:GROUND_Y-ROBOT_HEIGHT,
+	frameNr:0,
+	robotSprSheet:sRobotSpriteSheet,
+	robotType:SROBOT_TYPE,
+	robotSpeed:S_ROBOT_SPEED
+	});
 }
-return nanonautTouchedARobot;
+else {
+if (gameWorld == HALLOWEEN_WORLD) {
+	robotData.push({
+	x:newRobotX,
+	y:GROUND_Y-ROBOT_HEIGHT,
+	frameNr:0,
+	robotSprSheet:hRobotSpriteSheet,
+	robotType:HROBOT_TYPE,
+	robotSpeed:H_ROBOT_SPEED
+	});
+	}
+	else {
+	robotData.push({
+	x:newRobotX,
+	y:GROUND_Y-ROBOT_HEIGHT,
+	frameNr:0,
+	robotSprSheet:robotSpriteSheet,
+	robotType:ROBOT_TYPE,
+	robotSpeed:ROBOT_SPEED
+	});
+	}
+}
+}
+
+// Create a structure containing touched flag and robot typr
+return {nanonautTouchedARobot, robotTypeTouched};
 
 }
 
@@ -532,24 +712,84 @@ var backgroundX = -(cameraX % BACKGROUND_WIDTH);
 c.drawImage(backgroundImage,backgroundX,-210);
 c.drawImage(backgroundImage,backgroundX + BACKGROUND_WIDTH,-210);
 //Draw the ground.
-c.fillStyle =  'rgb(56,255,43)';
+c.fillStyle =  grassColour;
 c.fillRect(0,GROUND_Y - 40,CANVAS_WIDTH,CANVAS_HEIGHT - GROUND_Y + 40);
 
 // draw splash screen
 if (gameMode == SPLASH_SCREEN) {
 c.fillStyle = 'yellow';
-c.fillRect(100, 100, 580, 450);
+c.fillRect(0,0,800,600);
 c.fillStyle = 'black';
 c.font = '50px sans-serif';
-c.fillText('        Dawid\'s game', 120, 160);
-c.fillText('        in support of', 120, 220);
-c.fillText('   Mary\'s Meals charity',120,290);
+c.fillText('PLAY MENU', 320, 80);
+c.fillText('Start', 50, 150);
+c.fillText('New user', 50, 200);
+c.fillText('Choose user', 50, 250);
+c.fillText('Halloween world', 50, 300);
 c.font = '25px sans-serif';
-c.fillText('Press space bar or tap screen to start and jump', 120, 370);
-c.font = '14px sans-serif';
-c.fillText('         Game is based on a book "Create with code" by CoderDojo Foundation.', 120, 480);
-//enable below when ads work
-//c.fillText('Please consider clicking on the ad below - all proceeds will be donated to Mary\'s Meals.',120, 510);
+c.fillText('Press space bar or tap screen to jump', 120, 370);
+if (currentUser!='') {
+c.font = '50px sans-serif';
+c.fillText('current user:' + currentUser ,250,500);
+}
+
+c.fillStyle = 'red';
+c.font = '50px sans-serif';
+c.fillText('*', 30, 100 + selectedOption*50 );
+
+return;
+}
+
+// draw pause screen
+if (gameMode == PAUSE_SCREEN) {
+c.fillStyle = 'yellow';
+c.fillRect(0,0,800,600);
+c.fillStyle = 'black';
+c.font = '50px sans-serif';
+c.fillText('MENU', 320, 80);
+c.fillText('Gold:' + nanonautMoney, 50, 150);
+c.fillText('Highest score in metres:' + (nanonautX/100+ loadedDistance),50,200);
+c.font = '25px sans-serif';
+c.fillText('Press escape or tap screen to go back to game', 120, 370);
+c.font = '30px sans-serif';
+c.fillStyle = 'red';
+c.fillText('S',10,575);
+c.fillStyle = 'white';
+c.fillText('H',30,575);
+c.fillStyle = 'red';
+c.fillText('O',50,575);
+c.fillStyle = 'white';
+c.fillText('P',70,575);
+if (mousePosX<SHOP_XMAX && mousePosX>SHOP_XMIN && mousePosY<SHOP_YMAX && mousePosY>SHOP_YMIN) {
+gameMode = SHOP_SCREEN;
+mousePosX=0;
+mousePosY=0;
+}
+return;
+}
+
+// draw shop
+if (gameMode == SHOP_SCREEN) {
+c.font = '50px sans-serif';
+c.fillStyle = 'rgb(0,0,255)';
+c.fillRect(0,0,800,600);
+c.fillStyle = 'red';
+c.fillText('S',320,80);
+c.fillStyle = 'white';
+c.fillText('H',370,80);
+c.fillStyle = 'red';
+c.fillText('O',420,80);
+c.fillStyle = 'white';
+c.fillText('P',470,80);
+c.font = '25px sans-serif';
+c.fillStyle = 'white';
+c.fillText('STRIDER I:    $20',50,150);
+c.fillText('STRIDER II:    $40',50,200);
+c.fillText('STRIDER III:    $60',50,250);
+
+c.fillStyle = 'red';
+c.font = '50px sans-serif';
+c.fillText('*', 30, 125 + selectedShopOption*50 );
 return;
 }
 
@@ -564,13 +804,18 @@ c.drawImage(bushData[i].image,bushData[i].x - shakenCameraX,GROUND_Y - bushData[
 //draw the robots
 for (var i = 0; i<robotData.length; i++) {
 drawAnimatedSprite(robotData[i].x-shakenCameraX,
-robotData[i].y-shakenCameraY,robotData[i].frameNr,robotSpriteSheet);
+robotData[i].y-shakenCameraY,robotData[i].frameNr,robotData[i].robotSprSheet);
 }
 
 //Draw the Nanonaut.
+if (striderTimer == 0) {
 drawAnimatedSprite(nanonautX-shakenCameraX,nanonautY-shakenCameraY,
 nanonautFrameNr,nanonautSpriteSheet);
-
+}
+else {
+drawAnimatedSprite(nanonautX-shakenCameraX,nanonautY-shakenCameraY,
+nanonautFrameNr,nanonautStriderSpriteSheet);
+}
 //draw the gold
 for (var i = 0; i<moneyData.length; i++) {
 drawAnimatedSprite(moneyData[i].x-shakenCameraX,
@@ -586,15 +831,22 @@ moneyData[i].y-shakenCameraY,moneyData[i].frameNr,moneySpriteSheet);
  
 
 //draw distance
-var nanonautDistance = nanonautX/100;
+var nanonautDistance = nanonautX/100; 
 c.fillStyle = 'black';
 c.font = '48px sans-serif';
 c.fillText(nanonautDistance.toFixed(0)+'m',20,40);
 
 //draw Health bar
+if (striderTimer===0) {
 c.fillStyle = 'red';
-c.fillRect(400,10,nanonautHealth / NANONAUT_MAX_HEALTH*380,20);
 c.strokeStyle = 'red';
+}
+else {
+c.fillStyle = 'white';
+c.strokeStyle = 'white';
+}
+
+c.fillRect(400,10,nanonautHealth / NANONAUT_MAX_HEALTH*380,20);
 c.strokeRect(400,10,380,20);
 
 //draw the money counter.
@@ -602,16 +854,37 @@ c.fillStyle = 'black';
 c.font = '48px sans-serif';
 c.fillText(nanonautMoney.toFixed(0)+'gold',170,40);
 
-						 
-					  
-						   
-												   
-
 // draw game over
 if (gameMode == GAME_OVER_GAME_MODE) {
 c.fillStyle = 'black';
 c.font = '96px sans-serif';
 c.fillText('GAME OVER',120,300);
+c.fillStyle = 'white'
+c.font = '36px sans-serif' ;
+c.fillText('START AGAIN',5,475) 
+c.fillStyle = 'white'
+c.font = '36px sans-serif' ;
+c.fillText('EXIT TO START SCREEN',350,475)
+c.fillText(mousePosX + "  " + mousePosY, 50,50);
+if (mousePosX<START_AGAIN_XMAX && mousePosX>START_AGAIN_XMIN && mousePosY<START_AGAIN_YMAX && mousePosY>START_AGAIN_YMIN) {
+gameMode = PLAY_GAME_MODE;
+nanonautHealth = NANONAUT_MAX_HEALTH;
+//nanonautMoney = 0;
+nanonautX = CANVAS_WIDTH / 2;
+mousePosX=0;
+mousePosY=0;
+bushData = generateBushes();
+}
+
+if (mousePosX<EXIT_XMAX && mousePosX>EXIT_XMIN && mousePosY<EXIT_YMAX && mousePosY>EXIT_YMIN) {
+gameMode = SPLASH_SCREEN;
+nanonautHealth = NANONAUT_MAX_HEALTH;
+nanonautMoney = 0;
+nanonautX = CANVAS_WIDTH / 2;
+mousePosX=0;
+mousePosY=0;
+bushData = generateBushes();
+}
 }
 }
 
