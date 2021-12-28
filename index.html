@@ -61,8 +61,9 @@ START_OPTION = 1;
 NEW_USER_OPTION = 2;
 CHOOSE_USER_OPTION = 3;
 HALLOWEEN_WORLD = 4;
-NORMAL_WORLD = 5;
-MAX_OPTION = 4;
+CHRISTMAS_WORLD = 5;
+NORMAL_WORLD = 6;
+MAX_OPTION = 5;
 MIN_OPTION = 1;
 
 // Shop option modes
@@ -154,6 +155,9 @@ backgroundLightImage.src = 'background.png';
 
 var backgroundDarkImage = new Image();
 backgroundDarkImage.src = 'background_dark.png';
+
+var christmasBackgroundImage = new Image();
+christmasBackgroundImage.src = 'christmas_background.png';
 
 var backgroundImage = backgroundLightImage;
 
@@ -400,6 +404,14 @@ backgroundImage = backgroundDarkImage;
 grassColour = 'rgb(74,36,0)';
 gameMode = PLAY_GAME_MODE;
 gameWorld = HALLOWEEN_WORLD;
+}
+else if (event.keyCode === ENTER_KEYCODE && gameMode === SPLASH_SCREEN && selectedOption === CHRISTMAS_WORLD) {
+backgroundImage = christmasBackgroundImage;
+grassColour = 'hsv(104,32,76)';
+gameMode = PLAY_GAME_MODE;
+gameWorld = NORMAL_WORLD;
+bush1Image.src = 'christmasBush1.png';
+bush2Image.src = 'christmasBush2.png';
 }
 else if (event.keyCode === ESC_KEYCODE && gameMode === SHOP_SCREEN) {
 gameMode = PAUSE_SCREEN;
@@ -718,17 +730,18 @@ c.fillRect(0,GROUND_Y - 40,CANVAS_WIDTH,CANVAS_HEIGHT - GROUND_Y + 40);
 
 // draw splash screen
 if (gameMode == SPLASH_SCREEN) {
-c.fillStyle = 'yellow';
+c.fillStyle = 'rgb(236,236,236)';
 c.fillRect(0,0,800,600);
-c.fillStyle = 'black';
+c.fillStyle = 'red';
 c.font = '50px sans-serif';
 c.fillText('PLAY MENU', 320, 80);
 c.fillText('Start', 50, 150);
 c.fillText('New user', 50, 200);
 c.fillText('Choose user', 50, 250);
 c.fillText('Halloween world', 50, 300);
+c.fillText('Christmas World', 50, 350)
 c.font = '25px sans-serif';
-c.fillText('Press space bar or tap screen to jump', 120, 370);
+c.fillText('Press space bar or tap screen to jump', 120, 420);
 if (currentUser!='') {
 c.font = '50px sans-serif';
 c.fillText('current user:' + currentUser ,250,500);
@@ -743,9 +756,9 @@ return;
 
 // draw pause screen
 if (gameMode == PAUSE_SCREEN) {
-c.fillStyle = 'yellow';
+c.fillStyle = 'rgb(255,255,114)';
 c.fillRect(0,0,800,600);
-c.fillStyle = 'black';
+c.fillStyle = 'rgb(0,167,12)';
 c.font = '50px sans-serif';
 c.fillText('MENU', 320, 80);
 c.fillText('Gold:' + nanonautMoney, 50, 150);
@@ -782,6 +795,8 @@ c.fillStyle = 'red';
 c.fillText('O',420,80);
 c.fillStyle = 'white';
 c.fillText('P',470,80);
+c.font = '30px sans-serif';
+c.fillText('-CHRISTMAS!!!-',300,110);
 c.font = '25px sans-serif';
 c.fillStyle = 'white';
 c.fillText('STRIDER I:    $20',50,150);
