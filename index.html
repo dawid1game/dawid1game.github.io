@@ -268,6 +268,7 @@ var nanonautIsInTheAir = false;
 
 window.addEventListener('touchstart',onTouchDown);
 window.addEventListener('touchend',onTouchUp);
+window.addEventListener('touchmove',onMoveTouch);
 window.addEventListener('keydown',onKeyDown);
 window.addEventListener('keyup',onKeyUp);
 window.addEventListener('load',start);
@@ -287,6 +288,16 @@ var actualSpeed = ROBOT_X_SPEED;
 
 var mousePosX=0;
 var mousePosY=0;
+
+//Detecting swipes
+var initialX = null;
+var initialY = null;
+var swipeDir = 0;
+SWIPE_NO_SWIPE = 0;
+SWIPE_UP = 1;
+SWIPE_DOWN = 2;
+MIN_SWIPE_COUNT = 30;
+ 
 
 function start() {
 window.requestAnimationFrame(mainLoop);
@@ -447,10 +458,10 @@ gameMode = PAUSE_SCREEN;
 
 function onTouchDown(event) {
 spaceKeyIsPressed = true;
-if (gameMode === SPLASH_SCREEN) {
-gameMode = PLAY_GAME_MODE;
-gameWorld = NORMAL_WORLD;
-}
+initialX = event.touches[0].clientX;
+initialY = event.touches[0].clientY;
+swipeDir = SWIPE_NO_SWIPE;
+
 }
 
 function onKeyUp(event) {
@@ -459,8 +470,73 @@ spaceKeyIsPressed = false;
 }
 }
 
+function onMoveTouch(event)
+{
+if ((initialX != null) && (initialY != null))
+{
+	var currentX = event.touches[0].clientX;
+    var currentY = event.touches[0].clientY;
+
+    var diffX = initialX - currentX;
+    var diffY = initialY - currentY;
+	if (Math.abs(diffX) < Math.abs(diffY)) 
+	{
+		if (diffY > MIN_SWIPE_COUNT) {
+        // swiped up
+        swipeDir = SWIPE_UP;
+      } else if (diffY < -MIN_SWIPE_COUNT){
+        // swiped down
+        swipeDir = SWIPE_DOWN;
+      }  
+	  else
+	  {
+	    swipeDir = SWIPE_NO_SWIPE;
+	  }
+	}
+}
+}
+
 function onTouchUp(event) {
 spaceKeyIsPressed = false;
+if (gameMode === SPLASH_SCREEN) {
+   if (swipeDir === SWIPE_NO_SWIPE) 
+   {
+      if (selectedOption === START_OPTION)
+	  {
+		gameMode = PLAY_GAME_MODE;
+		gameWorld = NORMAL_WORLD;
+	  }
+	  else if (selectedOption === HALLOWEEN_WORLD)
+	  {
+		backgroundImage = backgroundDarkImage;
+		grassColour = 'rgb(74,36,0)';
+		gameMode = PLAY_GAME_MODE;
+		gameWorld = HALLOWEEN_WORLD;
+	  }
+	  else if (selectedOption === CHRISTMAS_WORLD)
+	  {
+		backgroundImage = christmasBackgroundImage;
+		grassColour = 'hsv(104,32,76)';
+		gameMode = PLAY_GAME_MODE;
+		gameWorld = CHRISTMAS_WORLD;
+		bush1Image.src = 'christmasBush1.png';
+		bush2Image.src = 'christmasBush2.png';
+	  }
+   }
+   else if (swipeDir === SWIPE_DOWN)
+   {
+     selectedOption = selectedOption +1;
+     if (selectedOption > MAX_OPTION) {
+      selectedOption = MIN_OPTION;
+     }
+   }
+   else
+   {
+     selectedOption = selectedOption - 1;
+     if (selectedOption < MIN_OPTION) {
+      selectedOption = MAX_OPTION;
+   }}
+}
 }
 
 function onMouseClick(event) {
