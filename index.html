@@ -337,7 +337,7 @@ console.log(event.keyCode);
 if (event.keyCode === SPACE_KEYCODE) {
 spaceKeyIsPressed = true;
 }
-else if (event.keyCode === ENTER_KEYCODE && gameMode === PLAY_GAME_MODE) {
+else if (event.keyCode === ENTER_KEYCODE && gameMode === PLAY_GAME_MODE)  {
 gameMode = PAUSE_SCREEN;
 }
 else if (event.keyCode === ESC_KEYCODE && gameMode === PAUSE_SCREEN) {
@@ -462,6 +462,16 @@ initialX = event.touches[0].clientX;
 initialY = event.touches[0].clientY;
 swipeDir = SWIPE_NO_SWIPE;
 
+console.log (initialX, initialY);
+// Check is health bar was closed, if so then move to the shop
+if (initialX > 400 && initialX < (400+380) && initialY > 10 && initialY <(10+20) && gameMode === PLAY_GAME_MODE)	
+	{
+		gameMode = PAUSE_SCREEN;
+	}
+else if (initialX > 120 && initialX < (120+600) && initialY > 350 && initialY <(370+20) && gameMode === PAUSE_SCREEN)
+	{
+		gameMode = PLAY_GAME_MODE;
+	}
 }
 
 function onKeyUp(event) {
@@ -638,7 +648,7 @@ screenshake = false;
 
 }
 //UPDATE MONEY
-updateMoney();							 
+updateMoney();
 }
 
 function updateMoney(){
@@ -864,7 +874,7 @@ c.fillText('MENU', 320, 80);
 c.fillText('Gold:' + nanonautMoney, 50, 150);
 c.fillText('Highest score in metres:' + (nanonautX/100+ loadedDistance),50,200);
 c.font = '25px sans-serif';
-c.fillText('Press escape or tap screen to go back to game', 120, 370);
+c.fillText('Press escape or tap screen here to go back to game', 120, 370);
 c.font = '30px sans-serif';
 c.fillStyle = 'red';
 c.fillText('S',10,575);
@@ -981,7 +991,7 @@ c.fillText('START AGAIN',5,475)
 c.fillStyle = 'white'
 c.font = '36px sans-serif' ;
 c.fillText('EXIT TO START SCREEN',350,475)
-c.fillText(mousePosX + "  " + mousePosY, 50,50);
+//c.fillText(mousePosX + "  " + mousePosY, 50,50);
 if (mousePosX<START_AGAIN_XMAX && mousePosX>START_AGAIN_XMIN && mousePosY<START_AGAIN_YMAX && mousePosY>START_AGAIN_YMIN) {
 gameMode = PLAY_GAME_MODE;
 nanonautHealth = NANONAUT_MAX_HEALTH;
